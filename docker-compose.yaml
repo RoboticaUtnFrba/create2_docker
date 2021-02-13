@@ -1,0 +1,21 @@
+# Reference: https://docs.docker.com/compose/compose-file/compose-file-v3
+---
+version: "3.4"
+
+services:
+  hardware:
+    image: osrf/ros:foxy-desktop
+    command: bash
+    container_name: hardware
+    devices:
+      - /dev/dri
+      - /dev/snd
+    environment:
+      - DISPLAY=${DISPLAY}
+    network_mode: "host"
+    privileged: true
+    user: root
+    tty: yes # Without a tty, rclpy/rclcpp infinitely buffer standard out
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+

@@ -1,0 +1,23 @@
+FROM cyberbotics/webots:R2021a-ubuntu20.04
+
+LABEL maintainer="Emiliano Borghi"
+
+ENV USER=create2
+ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES},display
+
+# Create a user with passwordless sudo
+ARG UID
+USER root
+RUN adduser --gecos "Development User" --disabled-password -u $UID $USER
+RUN adduser $USER sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# https://cyberbotics.com/doc/guide/running-extern-robot-controllers#running-extern-robot-controllers
+ENV PYTHONPATH=${PYTHONPATH}:${WEBOTS_HOME}/lib/controller/python3
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${WEBOTS_HOME}/lib/controller
+
+# Audio support
+RUN usermod -aG audio ${USER}
+RUN apt-get update && apt-get install -y alsa-utils
+
+USER $USER

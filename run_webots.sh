@@ -6,17 +6,13 @@ xhost +local:root
 docker run -it --rm \
   --env="DISPLAY" \
   --env="QT_X11_NO_MITSHM=1" \
+  --workdir="/home/create2/colcon_ws" \
+  --volume="/home/$USER/colcon_ws:/home/create2/colcon_ws/src" \
   --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-  --workdir="/home/$USER" \
-  --volume="/home/$USER:/home/$USER" \
-  --volume="/etc/group:/etc/group:ro" \
-  --volume="/etc/passwd:/etc/passwd:ro" \
-  --volume="/etc/shadow:/etc/shadow:ro" \
-  --volume="/etc/sudoers.d:/etc/sudoers.d:ro" \
-  --device "/dev/snd" \
-  --group-add audio \
-  --gpus=all \
-  --network=host \
+  --device="/dev/snd" \
+  --group-add="audio" \
+  --gpus="all" \
+  --network="host" \
   create2/webots $@
 
 xhost -local:root

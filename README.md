@@ -30,7 +30,7 @@ make create2_webots
 ### Run
 
 ```bash
-./run_webots.sh [webots]
+./run_webots.sh [bash]
 ```
 
-You can replace `[webots]` with any other command.
+You can replace `[bash]` with any other command.

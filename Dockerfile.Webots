@@ -17,9 +17,8 @@ RUN apt-get update && apt-get -q -y install --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a user with passwordless sudo
-ARG UID
 USER root
-RUN adduser --gecos "Development User" --disabled-password -u $UID $USER
+RUN adduser --gecos "Development User" --disabled-password -u 1000 $USER
 RUN adduser $USER sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
@@ -77,8 +76,8 @@ RUN pip3 freeze | grep pytest \
     && python3 -m pytest --version
 
 # Permissions to workspace
-RUN mkdir -p /home/$USER/colcon_ws
-RUN chown -R $USER:$USER /home/$USER/colcon_ws
+RUN mkdir -p /colcon_ws
+RUN chown -R $USER:$USER /colcon_ws
 
 # Webots config
 RUN mkdir -p /home/$USER/.config/Cyberbotics
@@ -88,5 +87,5 @@ USER $USER
 
 # setup ros2 environment
 RUN echo ". /opt/ros/foxy/setup.bash" >> /home/$USER/.bashrc
-ENV COLCON_SETUP_BASH "/home/$USER/colcon_ws/devel/setup.bash"
+ENV COLCON_SETUP_BASH "/colcon_ws/install/local_setup.bash"
 RUN echo "[[ -f ${COLCON_SETUP_BASH} ]] && . ${COLCON_SETUP_BASH}" >> /home/$USER/.bashrc

@@ -21,16 +21,17 @@ docker-compose up --build hardware
 
 ## Simulation
 
-### Build
+### Bringup
 
 ```bash
-make create2_webots
+xhost +
+docker-compose up --build webots_simulation
 ```
 
-### Run
+### Debug
 
 ```bash
-./run_webots.sh [bash]
+docker-compose run --rm webots_simulation [bash]
 ```
 
-You can replace `[bash]` with any other command.
+You can replace `[bash]` with any other command like [tmux].

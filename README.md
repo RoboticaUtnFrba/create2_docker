@@ -8,6 +8,8 @@ Docker images to control a real iRobot Create 2 with ROS 2 and simulate it in We
 
 - `nvidia-container-toolkit`
 
+- Create your workspace locally in `/home/$USER/colcon_ws`
+
 ### Installation
 
 Please refer to [official site](https://docs.docker.com/compose/install/).

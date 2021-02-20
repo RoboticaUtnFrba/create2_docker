@@ -57,16 +57,16 @@ services:
     working_dir: /colcon_ws
 
   # Software stack
-  services:
+  autonomy:
     image: osrf/ros:foxy-desktop
     command: bash -c ". /entrypoint.sh create2_vision pointcloud.launch.py"
-    container_name: services
+    container_name: autonomy
     network_mode: host
     privileged: true
     stdin_open: true
     tty: true
     volumes:
-      - /home/$USER/colcon_ws/src/create2_vision:/colcon_ws/src/create2_vision:rw
+      - /home/$USER/colcon_ws/src/create2_autonomy:/colcon_ws/src/create2_autonomy:rw
       - ./entrypoint.sh:/entrypoint.sh
     working_dir: /colcon_ws
 

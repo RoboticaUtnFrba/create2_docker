@@ -83,7 +83,12 @@ RUN chown -R $USER:$USER /colcon_ws
 RUN mkdir -p /home/$USER/.config/Cyberbotics
 COPY --chown=$USER:$USER Webots-R2021a.conf /home/$USER/.config/Cyberbotics/Webots-R2021a.conf
 
+# rosdep
+RUN apt-get update
+RUN rosdep init
+
 USER $USER
+RUN rosdep update
 
 # setup ros2 environment
 RUN echo ". /opt/ros/foxy/setup.bash" >> /home/$USER/.bashrc

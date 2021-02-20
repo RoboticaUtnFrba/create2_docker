@@ -5,13 +5,13 @@
 version: "3.4"
 
 services:
+  # Simulation
   webots_simulation:
     build:
       context: .
       dockerfile: Dockerfile.Webots
-    command: bash -c "cd /colcon_ws && colcon build && . /colcon_ws/install/setup.bash && ros2 launch create2_description spawn_robot.launch.py"
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
+      network: host
+    command: bash -c ". /entrypoint.sh create2_description spawn_robot.launch.py"
     container_name: webots_simulation
     deploy:
       resources:
@@ -27,27 +27,63 @@ services:
       - QT_X11_NO_MITSHM=1
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
-    network_mode: "host"
+    #network_mode: "host"
     privileged: true
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
     user: create2
     volumes:
-      - /home/$USER/colcon_ws:/colcon_ws:rw
+      - /home/$USER/colcon_ws/src/create2_description:/colcon_ws/src/create2_description:rw
+      # TODO: We have our own copy of webots_ros2 with changes
+      - /home/$USER/colcon_ws/src/webots_ros2:/colcon_ws/src/webots_ros2:rw
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./entrypoint.sh:/entrypoint.sh
     working_dir: /colcon_ws
 
+  # Robot hardware
   hardware:
     image: osrf/ros:foxy-desktop
-    command: bash
+    command: bash -c ". /entrypoint.sh create2_hardware standalone.launch.py"
     container_name: hardware
     devices:
-      - /dev/dri
-      - /dev/snd
-    environment:
-      - DISPLAY=${DISPLAY}
-    network_mode: "host"
+      - /dev/usb
+    network_mode: host
     privileged: true
-    user: root
-    tty: yes # Without a tty, rclpy/rclcpp infinitely buffer standard out
+    stdin_open: true
+    tty: true
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /home/$USER/colcon_ws/src/create2_hardware:/colcon_ws/src/create2_hardware:rw
+      - ./entrypoint.sh:/entrypoint.sh
+    working_dir: /colcon_ws
+
+  # Software stack
+  services:
+    image: osrf/ros:foxy-desktop
+    command: bash -c ". /entrypoint.sh create2_vision pointcloud.launch.py"
+    container_name: services
+    network_mode: host
+    privileged: true
+    stdin_open: true
+    tty: true
+    volumes:
+      - /home/$USER/colcon_ws/src/create2_vision:/colcon_ws/src/create2_vision:rw
+      - ./entrypoint.sh:/entrypoint.sh
+    working_dir: /colcon_ws
+
+  # Development
+  # docker-compose run --rm dev
+  dev:
+    image: osrf/ros:foxy-desktop
+    command: /bin/bash
+    container_name: dev
+    depends_on:
+      - webots_simulation
+    network_mode: host
+    privileged: true
+    stdin_open: true
+    tty: true
+    volumes:
+      - /home/$USER/colcon_ws:/colcon_ws:rw
+      - ./entrypoint.sh:/entrypoint.sh
+    working_dir: /colcon_ws
 

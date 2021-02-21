@@ -83,6 +83,9 @@ RUN chown -R $USER:$USER /colcon_ws
 RUN mkdir -p /home/$USER/.config/Cyberbotics
 COPY --chown=$USER:$USER Webots-R2021a.conf /home/$USER/.config/Cyberbotics/Webots-R2021a.conf
 
+# Tmux config
+COPY --chown=$USER:$USER .tmux.conf /home/$USER/.tmux.conf
+
 # rosdep
 RUN apt-get update
 RUN rosdep init

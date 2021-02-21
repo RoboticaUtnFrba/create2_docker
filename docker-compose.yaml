@@ -5,6 +5,35 @@
 version: "3.4"
 
 services:
+  # Utilities (graphical tools and debugging)
+  utilities:
+    build:
+      context: .
+      dockerfile: Dockerfile.Webots
+      network: host
+    command: bash -c ". /entrypoint.sh create2_utilities rviz.launch.py"
+    container_name: utilities
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities:
+              - gpu
+    environment:
+      - DISPLAY=$DISPLAY
+      - QT_X11_NO_MITSHM=1
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    privileged: true
+    stdin_open: true
+    tty: true
+    user: create2
+    volumes:
+      - /home/$USER/colcon_ws/src/create2_utilities:/colcon_ws/src/create2_utilities:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./entrypoint.sh:/entrypoint.sh
+    working_dir: /colcon_ws
+
   # Simulation
   webots_simulation:
     build:
@@ -27,7 +56,6 @@ services:
       - QT_X11_NO_MITSHM=1
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
-    #network_mode: "host"
     privileged: true
     stdin_open: true # docker run -i
     tty: true        # docker run -t
@@ -59,7 +87,7 @@ services:
   # Software stack
   autonomy:
     image: osrf/ros:foxy-desktop
-    command: bash -c ". /entrypoint.sh create2_vision pointcloud.launch.py"
+    command: bash -c ". /entrypoint.sh create2_navigation slam.launch.py"
     container_name: autonomy
     network_mode: host
     privileged: true
@@ -73,17 +101,34 @@ services:
   # Development
   # docker-compose run --rm dev
   dev:
-    image: osrf/ros:foxy-desktop
+    build:
+      context: .
+      dockerfile: Dockerfile.Webots
+      network: host
     command: /bin/bash
     container_name: dev
     depends_on:
-      - webots_simulation
-    network_mode: host
+      - utilities
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities:
+              - gpu
+    environment:
+      - DISPLAY=$DISPLAY
+      - QT_X11_NO_MITSHM=1
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
     privileged: true
     stdin_open: true
     tty: true
+    user: create2
     volumes:
       - /home/$USER/colcon_ws:/colcon_ws:rw
+      # TODO: We have our own copy of webots_ros2 with changes
+      - /home/$USER/colcon_ws/src/webots_ros2:/colcon_ws/src/webots_ros2:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./entrypoint.sh:/entrypoint.sh
     working_dir: /colcon_ws
 

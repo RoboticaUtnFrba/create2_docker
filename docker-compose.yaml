@@ -71,7 +71,7 @@ services:
   # Robot hardware
   hardware:
     image: osrf/ros:foxy-desktop
-    command: bash -c ". /entrypoint.sh create2_hardware standalone.launch.py"
+    command: bash -c ". /entrypoint.sh create2_bringup standalone.launch.py"
     container_name: hardware
     devices:
       - /dev/usb
@@ -81,6 +81,7 @@ services:
     tty: true
     volumes:
       - /home/$USER/colcon_ws/src/create2_hardware:/colcon_ws/src/create2_hardware:rw
+      - /home/$USER/colcon_ws/src/libcreate:/colcon_ws/src/libcreate:rw
       - ./entrypoint.sh:/entrypoint.sh
     working_dir: /colcon_ws
 

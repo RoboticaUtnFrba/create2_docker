@@ -57,6 +57,7 @@ PACKAGES+=( "create2_autonomy" )
 PACKAGES+=( "create2_description" )
 PACKAGES+=( "create2_hardware" )
 PACKAGES+=( "create2_utilities" )
+PACKAGES+=( "libcreate" )
 PACKAGES+=( "webots_ros2" )
 for PACKAGE in ${PACKAGES[@]};
 do

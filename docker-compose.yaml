@@ -127,8 +127,6 @@ services:
     user: create2
     volumes:
       - /home/$USER/colcon_ws:/colcon_ws:rw
-      # TODO: We have our own copy of webots_ros2 with changes
-      - /home/$USER/colcon_ws/src/webots_ros2:/colcon_ws/src/webots_ros2:rw
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./entrypoint.sh:/entrypoint.sh
     working_dir: /colcon_ws
